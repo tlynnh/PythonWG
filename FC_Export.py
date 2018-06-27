@@ -5,6 +5,7 @@
 # Author:      thaynes
 #
 # Created:     15/03/2018
+# Updated:     26/06/2018 TH
 # Copyright:   (c) thaynes 2018
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
@@ -15,7 +16,7 @@
 
 import os
 import os.path
-import arcpy, csv, xlrd, pprint
+import arcpy, csv
 from arcpy import env
 from arcpy.sa import *
 from datetime import datetime
@@ -110,13 +111,9 @@ def CreateIntersects(in_fc,int_lyr,out_name,out_mdb):
 
             del int_flyr
 
-        elif arcpy.Describe(int_lyr).dataType == "Table":
-
-            pass
-
         else:
 
-            print "Error - Data Type '" + str(arcpy.Describe(int_lyr).dataType) + "' not recognized for layer: " + str(int_name) + ". DataType must be FeatureClass or Table."
+            print "Error - Data Type '" + str(arcpy.Describe(int_lyr).dataType) + "' not recognized for layer: " + str(int_name) + ". DataType must be FeatureClass."
 
 
 
@@ -129,11 +126,11 @@ print "Initializing functions..."
 GetTime("Creating FC_Export.mdb")
 
 try:
-    #fc_export = arcpy.CreateFileGDB_management(output_folder,"FC_Export" + str(today_date))
-    fc_export = arcpy.CreatePersonalGDB_management(output_folder,"FC_Export" + str(today_date))
+    fc_export = arcpy.CreateFileGDB_management(output_folder,"FC_Export" + str(today_date))
+    #fc_export = arcpy.CreatePersonalGDB_management(output_folder,"FC_Export" + str(today_date))
 except Exception as e:
-    #fc_export = str(output_folder) + "FC_Export" + str(today_date) + ".gdb"
-    fc_export = str(output_folder) + "//FC_Export" + str(today_date) + ".mdb"
+    fc_export = str(output_folder) + "FC_Export" + str(today_date) + ".gdb"
+    #fc_export = str(output_folder) + "//FC_Export" + str(today_date) + ".mdb"
 
 print fc_export
 
@@ -170,33 +167,5 @@ for lyr,name,cov,lot in int_files:
             print e
 
 GetTime("Intersects complete, MD has script for LICENCE_PID work.")
-
-##for lyr,name,fc in int_files:
-##    if "LICENCE_PID" in str(lyr):
-##        for wlyr,wname,wfc in int_files:
-##            if "WLS_POD" in str(wlyr):
-##                try:
-##                    water_table = arcpy.JoinField_management(str(fc_export) + "\\" + str(wname),"LICENCE_NO",str(lyr),"LICENCE_NO")
-##                    fields = arcpy.ListFields(water_table)
-##                    fieldinfo = arcpy.FieldInfo()
-##                    for field in fields:
-##                        if field.name == "TPOD_TAG":
-##                            fieldinfo.addField(field.name,field.name,"VISIBLE","")
-##                        elif field.name == "LICENCE_NO":
-##                            fieldinfo.addField(field.name,field.name,"VISIBLE","")
-##                        elif field.name == "PID":
-##                            fieldinfo.addField(field.name,field.name,"VISIBLE","")
-##                        else:
-##                            fieldinfo.addField(field.name,field.name,"HIDDEN","")
-##                    water_tv = arcpy.MakeTableView_management(water_table,str(name),"",fc_export,fieldinfo)
-##                    water_lic = arcpy.TableToTable_conversion(water_tv,fc_export,str(name))
-##                except Exception as e:
-##                    print "ERROR JOINING LICENCE_PID TO WLS_POD"
-##                    print e
-##            else:
-##                print "WLS_POD layer not found, cannot join LICENCE_PID."
-
-
-#GetTime("Moving export to .mdb")
 
 GetTime("Script finished")
